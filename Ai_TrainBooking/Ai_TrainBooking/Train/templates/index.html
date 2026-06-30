@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RailAI - AI-Powered Train Reservation</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .spinner {
+      animation: spin 1s linear infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .slide-up {
+      animation: slideUp 0.4s ease-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+  
+
+
+  <!-- Header -->
+  <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="bg-gradient-to-br from-blue-600 to-indigo-600 p-2 rounded-xl">
+            <i data-lucide="train" class="w-7 h-7 text-white"></i>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              RailAI
+            </h1>
+            <p class="text-xs text-slate-500">Powered by Gemini LLM</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <i data-lucide="sparkles" class="w-5 h-5 text-amber-500"></i>
+          <span class="text-sm font-medium text-slate-700">AI-Powered Booking</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+    
+    <!-- Home View -->
+    <div id="homeView" class="space-y-8">
+      <!-- Hero Section -->
+      
+
+      <div class="text-center space-y-4 py-8" style="text-align: center;">
+
+        
+        <div class="flex justify-center mt-6">
+  <a
+    href="/"
+    class="flex items-center gap-2
+           px-6 py-3
+           rounded-xl
+           bg-gradient-to-r from-blue-500 to-indigo-600
+           text-white font-semibold
+           shadow-lg
+           hover:scale-105 hover:shadow-xl
+           transition-all duration-300"
+  >
+    Switch to Manul Mode
+  </a>
+</div>
+
+        <div class="inline-flex items-center space-x-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium">
+          <i data-lucide="zap" class="w-4 h-4"></i>
+          
+          <span>Book in under 30 seconds with AI</span>
+        </div>
+        <h2 class="text-5xl font-bold text-slate-800 leading-tight">
+          Intelligent Train Booking<br>
+          <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            Zero Manual Selection
+          </span>
+        </h2>
+        <p class="text-xl text-slate-600 max-w-2xl mx-auto">
+          Simply describe your preferences. Our AI finds the perfect seats for you and your family.
+        </p>
+      </div>
+
+      <!-- Search Card -->
+      <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-8 max-w-4xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">From</label>
+            <div class="relative">
+              <i data-lucide="map-pin" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+              <select id="searchFrom" class="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option>Chennai</option>
+                <option>Mumbai</option>
+                <option>Delhi</option>
+                <option>Bangalore</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">To</label>
+            <div class="relative">
+              <i data-lucide="map-pin" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+              <select id="searchTo" class="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value="">Select destination</option>
+                <option>Mumbai</option>
+                <option>Delhi</option>
+                <option>Bangalore</option>
+                <option>Coimbatore</option>
+                <option>Mysore</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Date</label>
+            <div class="relative">
+              <i data-lucide="calendar" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+              <input type="date" id="searchDate" class="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Passengers</label>
+            <div class="relative">
+              <i data-lucide="users" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+              <select id="searchPassengers" class="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option value="1">1 Passenger</option>
+                <option value="2">2 Passengers</option>
+                <option value="3">3 Passengers</option>
+                <option value="4">4 Passengers</option>
+                <option value="5">5 Passengers</option>
+                <option value="6">6 Passengers</option>
+                <option value="7">7 Passengers</option>
+                <option value="8">8 Passengers</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <button onclick="searchTrains()" id="searchButton" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2">
+          <i data-lucide="search" class="w-5 h-5"></i>
+          <span>Search Trains</span>
+        </button>
+      </div>
+
+      <!-- Popular Routes Preview -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-2xl font-bold text-slate-800">Popular Routes</h3>
+          <span class="text-sm text-slate-500" id="trainCount">Loading...</span>
+        </div>
+        <div id="popularTrains" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Popular trains will be loaded here -->
+        </div>
+      </div>
+
+      <!-- Features Section -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+        <div class="bg-white rounded-xl shadow-lg border border-slate-200 p-6 hover:shadow-xl transition-all">
+          <div class="mb-4">
+            <i data-lucide="sparkles" class="w-8 h-8 text-blue-600"></i>
+          </div>
+          <h4 class="font-bold text-lg text-slate-800 mb-2">AI Recommendations</h4>
+          <p class="text-sm text-slate-600">Gemini LLM analyzes your preferences and finds the perfect seats in milliseconds</p>
+        </div>
+        <div class="bg-white rounded-xl shadow-lg border border-slate-200 p-6 hover:shadow-xl transition-all">
+          <div class="mb-4">
+            <i data-lucide="users" class="w-8 h-8 text-indigo-600"></i>
+          </div>
+          <h4 class="font-bold text-lg text-slate-800 mb-2">Group Seating</h4>
+          <p class="text-sm text-slate-600">Intelligent algorithm ensures families are seated together, always</p>
+        </div>
+        <div class="bg-white rounded-xl shadow-lg border border-slate-200 p-6 hover:shadow-xl transition-all">
+          <div class="mb-4">
+            <i data-lucide="zap" class="w-8 h-8 text-amber-600"></i>
+          </div>
+          <h4 class="font-bold text-lg text-slate-800 mb-2">One-Click Booking</h4>
+          <p class="text-sm text-slate-600">Complete your reservation in under 30 seconds with zero manual selection</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results View -->
+    <div id="resultsView" class="space-y-6 hidden">
+      <div class="flex items-center justify-between">
+        <button onclick="showView('home')" class="flex items-center space-x-2 text-slate-600 hover:text-slate-800">
+          <i data-lucide="chevron-right" class="w-5 h-5 rotate-180"></i>
+          <span>Back to Search</span>
+        </button>
+        <div class="text-sm text-slate-600" id="searchSummary"></div>
+      </div>
+
+      <h2 class="text-3xl font-bold text-slate-800">
+        Available Trains <span id="resultsCount"></span>
+      </h2>
+
+      <div id="trainResults" class="space-y-4">
+        <!-- Search results will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Booking View -->
+    <div id="bookingView" class="space-y-6 hidden">
+      <div class="flex items-center justify-between">
+        <button onclick="showView('results')" class="flex items-center space-x-2 text-slate-600 hover:text-slate-800">
+          <i data-lucide="chevron-right" class="w-5 h-5 rotate-180"></i>
+          <span>Back to Results</span>
+        </button>
+      </div>
+
+      <!-- Selected Train Info -->
+      <div id="selectedTrainInfo" class="bg-white rounded-xl shadow-lg border border-slate-200 p-6">
+        <!-- Train info will be loaded here -->
+      </div>
+
+      <!-- Preferences Card -->
+      <div class="bg-white rounded-xl shadow-lg border border-slate-200 p-6">
+        <div class="flex items-center space-x-2 mb-6">
+          <i data-lucide="sparkles" class="w-6 h-6 text-amber-500"></i>
+          <h3 class="text-xl font-bold text-slate-800">Tell AI Your Preferences</h3>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Number of Passengers</label>
+            <select id="prefPassengers" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <option value="1">1 Passenger</option>
+              <option value="2">2 Passengers</option>
+              <option value="3">3 Passengers</option>
+              <option value="4">4 Passengers</option>
+              <option value="5">5 Passengers</option>
+              <option value="6">6 Passengers</option>
+              <option value="7">7 Passengers</option>
+              <option value="8">8 Passengers</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Seat Preference</label>
+            <select id="prefSeatType" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <option value="window">Window Seat</option>
+              <option value="aisle">Aisle Seat</option>
+              <option value="any">Any Seat</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Class Type</label>
+            <select id="prefClassType" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <!-- Options will be populated dynamically -->
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Booking Type</label>
+            <select id="prefBookingType" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <option value="individual">Individual</option>
+              <option value="group">Family/Group (Adjacent Seats)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+          <label class="flex items-center space-x-3 cursor-pointer">
+            <input type="checkbox" id="prefLegroom" class="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500">
+            <span class="text-sm text-slate-700">Extra Legroom</span>
+          </label>
+
+          <label class="flex items-center space-x-3 cursor-pointer">
+            <input type="checkbox" id="prefAvoidRestroom" checked class="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500">
+            <span class="text-sm text-slate-700">Away from Restrooms</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- AI Recommendations -->
+      <div id="recommendationsCard" class="bg-white rounded-xl shadow-lg border border-slate-200 p-6 hidden">
+        <div class="flex items-center space-x-2 mb-6">
+          <i data-lucide="zap" class="w-6 h-6 text-blue-600"></i>
+          <h3 class="text-xl font-bold text-slate-800">AI Recommendations</h3>
+          <span class="text-sm text-slate-500">(Analyzed in &lt;500ms)</span>
+        </div>
+
+        <div id="recommendationsList" class="space-y-4">
+          <!-- Recommendations will be loaded here -->
+        </div>
+      </div>
+
+      <!-- Seat Layout -->
+      <div id="seatLayoutCard" class="bg-white rounded-xl shadow-lg border border-slate-200 p-6 hidden">
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="armchair" class="w-6 h-6 text-slate-600"></i>
+            <h3 class="text-xl font-bold text-slate-800">Seat Layout</h3>
+          </div>
+          <div class="flex items-center space-x-4 text-xs">
+            <div class="flex items-center space-x-1">
+              <div class="w-6 h-6 bg-green-100 border-2 border-green-500 rounded"></div>
+              <span class="text-slate-600">Available</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <div class="w-6 h-6 bg-slate-200 border-2 border-slate-400 rounded"></div>
+              <span class="text-slate-600">Occupied</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <div class="w-6 h-6 bg-gradient-to-br from-amber-100 to-yellow-100 border-2 border-amber-500 rounded"></div>
+              <span class="text-slate-600">AI Pick</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Coach Selection -->
+        <div class="flex items-center space-x-2 mb-4">
+          <span class="text-sm font-medium text-slate-700">Select Coach:</span>
+          <div id="coachButtons" class="flex space-x-2">
+            <!-- Coach buttons will be generated here -->
+          </div>
+        </div>
+
+        <!-- Seat Grid -->
+        <div id="seatGrid" class="bg-gradient-to-b from-slate-50 to-white p-6 rounded-lg border border-slate-200 overflow-x-auto">
+          <!-- Seat grid will be generated here -->
+        </div>
+      </div>
+
+      <!-- Booking Summary -->
+      <div id="bookingSummary" class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl shadow-lg border border-green-200 p-6 hidden">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h4 class="font-bold text-lg text-slate-800">Booking Summary</h4>
+            <p class="text-sm text-slate-600" id="summarySeats"></p>
+            <div class="flex items-center space-x-2 mt-2">
+              <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
+              <span class="text-xs text-slate-500">AI-Optimized Selection</span>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="text-sm text-slate-500">Total Amount</p>
+            <p class="text-3xl font-bold text-green-600" id="totalAmount">₹0</p>
+          </div>
+        </div>
+
+        <button onclick="proceedToPayment()" id="confirmButton" class="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 rounded-lg font-semibold hover:from-green-700 hover:to-emerald-700 transition-all flex items-center justify-center space-x-2">
+          <i data-lucide="credit-card" class="w-5 h-5"></i>
+          <span>Proceed to Payment</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Payment View -->
+    <div id="paymentView" class="max-w-2xl mx-auto space-y-6 hidden">
+      <!-- Payment Header -->
+      <div class="flex items-center justify-between">
+        <button onclick="showView('booking')" class="flex items-center space-x-2 text-slate-600 hover:text-slate-800">
+          <i data-lucide="chevron-right" class="w-5 h-5 rotate-180"></i>
+          <span>Back to Booking</span>
+        </button>
+        <div class="flex items-center space-x-2 bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
+          <i data-lucide="shield-check" class="w-4 h-4"></i>
+          <span>Secure Payment</span>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="bg-white rounded-xl shadow-lg border border-slate-200 p-6">
+        <h3 class="font-bold text-xl text-slate-800 mb-4">Order Summary</h3>
+        <div id="paymentOrderSummary" class="space-y-3">
+          <!-- Order details will be loaded here -->
+        </div>
+      </div>
+
+      <!-- Payment Methods -->
+      <div class="bg-white rounded-xl shadow-lg border border-slate-200 p-6">
+        <h3 class="font-bold text-xl text-slate-800 mb-4">Select Payment Method</h3>
+        
+        <div class="space-y-3">
+          <!-- UPI -->
+          <label class="flex items-center p-4 border-2 border-slate-200 rounded-lg cursor-pointer hover:border-blue-500 transition-all">
+            <input type="radio" name="paymentMethod" value="upi" checked class="w-5 h-5 text-blue-600">
+            <div class="ml-4 flex items-center flex-1">
+              <div class="bg-gradient-to-br from-purple-500 to-indigo-600 p-2 rounded-lg">
+                <i data-lucide="smartphone" class="w-5 h-5 text-white"></i>
+              </div>
+              <div class="ml-3">
+                <p class="font-semibold text-slate-800">UPI</p>
+                <p class="text-xs text-slate-500">Google Pay, PhonePe, Paytm</p>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
+          </label>
+
+          <!-- Debit/Credit Card -->
+          <label class="flex items-center p-4 border-2 border-slate-200 rounded-lg cursor-pointer hover:border-blue-500 transition-all">
+            <input type="radio" name="paymentMethod" value="card" class="w-5 h-5 text-blue-600">
+            <div class="ml-4 flex items-center flex-1">
+              <div class="bg-gradient-to-br from-blue-500 to-cyan-600 p-2 rounded-lg">
+                <i data-lucide="credit-card" class="w-5 h-5 text-white"></i>
+              </div>
+              <div class="ml-3">
+                <p class="font-semibold text-slate-800">Debit/Credit Card</p>
+                <p class="text-xs text-slate-500">Visa, Mastercard, Rupay</p>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
+          </label>
+
+          <!-- Net Banking -->
+          <label class="flex items-center p-4 border-2 border-slate-200 rounded-lg cursor-pointer hover:border-blue-500 transition-all">
+            <input type="radio" name="paymentMethod" value="netbanking" class="w-5 h-5 text-blue-600">
+            <div class="ml-4 flex items-center flex-1">
+              <div class="bg-gradient-to-br from-green-500 to-emerald-600 p-2 rounded-lg">
+                <i data-lucide="building-2" class="w-5 h-5 text-white"></i>
+              </div>
+              <div class="ml-3">
+                <p class="font-semibold text-slate-800">Net Banking</p>
+                <p class="text-xs text-slate-500">All major banks</p>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
+          </label>
+
+          <!-- Wallet -->
+          <label class="flex items-center p-4 border-2 border-slate-200 rounded-lg cursor-pointer hover:border-blue-500 transition-all">
+            <input type="radio" name="paymentMethod" value="wallet" class="w-5 h-5 text-blue-600">
+            <div class="ml-4 flex items-center flex-1">
+              <div class="bg-gradient-to-br from-orange-500 to-red-600 p-2 rounded-lg">
+                <i data-lucide="wallet" class="w-5 h-5 text-white"></i>
+              </div>
+              <div class="ml-3">
+                <p class="font-semibold text-slate-800">Wallet</p>
+                <p class="text-xs text-slate-500">Paytm, Amazon Pay, Mobikwik</p>
+              </div>
+            </div>
+            <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
+          </label>
+        </div>
+      </div>
+
+      <!-- Payment Details Form (shown based on selection) -->
+      <div id="paymentDetailsCard" class="bg-white rounded-xl shadow-lg border border-slate-200 p-6">
+        <!-- UPI Form -->
+        <div id="upiForm" class="space-y-4">
+          <h4 class="font-semibold text-lg text-slate-800 mb-4">Enter UPI ID</h4>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">UPI ID</label>
+            <input type="text" id="upiId" placeholder="yourname@upi" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          </div>
+        </div>
+
+        <!-- Card Form -->
+        <div id="cardForm" class="space-y-4 hidden">
+          <h4 class="font-semibold text-lg text-slate-800 mb-4">Enter Card Details</h4>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Card Number</label>
+            <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Expiry Date</label>
+              <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">CVV</label>
+              <input type="text" id="cardCvv" placeholder="123" maxlength="3" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Cardholder Name</label>
+            <input type="text" id="cardName" placeholder="Name on card" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          </div>
+        </div>
+
+        <!-- Net Banking Form -->
+        <div id="netbankingForm" class="space-y-4 hidden">
+          <h4 class="font-semibold text-lg text-slate-800 mb-4">Select Your Bank</h4>
+          <select id="bankSelect" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <option value="">Select Bank</option>
+            <option>State Bank of India</option>
+            <option>HDFC Bank</option>
+            <option>ICICI Bank</option>
+            <option>Axis Bank</option>
+            <option>Punjab National Bank</option>
+            <option>Bank of Baroda</option>
+            <option>Canara Bank</option>
+            <option>Union Bank of India</option>
+          </select>
+        </div>
+
+        <!-- Wallet Form -->
+        <div id="walletForm" class="space-y-4 hidden">
+          <h4 class="font-semibold text-lg text-slate-800 mb-4">Select Wallet</h4>
+          <select id="walletSelect" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <option value="">Select Wallet</option>
+            <option>Paytm</option>
+            <option>Amazon Pay</option>
+            <option>Mobikwik</option>
+            <option>Freecharge</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Pay Button -->
+      <button onclick="processPayment()" id="payButton" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all flex items-center justify-center space-x-2">
+        <i data-lucide="lock" class="w-5 h-5"></i>
+        <span>Pay <span id="payAmount">₹0</span></span>
+      </button>
+
+      <!-- Security Notice -->
+      <div class="bg-slate-50 rounded-lg border border-slate-200 p-4">
+        <div class="flex items-start space-x-3">
+          <i data-lucide="shield-check" class="w-5 h-5 text-green-600 mt-0.5"></i>
+          <div class="space-y-1">
+            <p class="text-sm font-semibold text-slate-800">Secure Payment</p>
+            <p class="text-xs text-slate-600">Your payment information is encrypted and secure. We don't store your card details.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Processing View -->
+    <div id="processingView" class="max-w-2xl mx-auto hidden">
+      <div class="bg-white rounded-xl shadow-lg border border-slate-200 p-12 text-center">
+        <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <i data-lucide="loader-2" class="w-10 h-10 text-blue-600 spinner"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-slate-800 mb-2">Processing Payment</h3>
+        <p class="text-slate-600 mb-6">Please wait while we process your payment securely...</p>
+        <div class="flex items-center justify-center space-x-2">
+          <div class="w-2 h-2 bg-blue-600 rounded-full pulse"></div>
+          <div class="w-2 h-2 bg-blue-600 rounded-full pulse" style="animation-delay: 0.2s;"></div>
+          <div class="w-2 h-2 bg-blue-600 rounded-full pulse" style="animation-delay: 0.4s;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirmation View -->
+    <div id="confirmationView" class="max-w-2xl mx-auto space-y-6 hidden">
+      <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl shadow-lg border border-green-200 p-8 text-center slide-up">
+        <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i data-lucide="check-circle-2" class="w-10 h-10 text-white"></i>
+        </div>
+        <h2 class="text-3xl font-bold text-slate-800 mb-2">Booking Confirmed!</h2>
+        <p class="text-slate-600">Your AI-powered reservation is complete</p>
+        <div class="mt-4 inline-flex items-center space-x-2 bg-white px-4 py-2 rounded-full text-sm">
+          <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+          <span class="text-green-700 font-semibold">Payment Successful</span>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-lg border border-slate-200 p-6 space-y-4 slide-up" style="animation-delay: 0.1s;" id="confirmationDetails">
+        <!-- Confirmation details will be loaded here -->
+      </div>
+
+      <div class="bg-blue-50 rounded-xl border border-blue-200 p-6 slide-up" style="animation-delay: 0.2s;">
+        <div class="flex items-start space-x-3">
+          <i data-lucide="info" class="w-5 h-5 text-blue-600 mt-0.5"></i>
+          <div class="space-y-2">
+            <p class="font-semibold text-slate-800">AI Booking Complete</p>
+            <p class="text-sm text-slate-600">
+              Your seats were intelligently selected by Gemini LLM based on your preferences. 
+              Booking completed in under 30 seconds with zero manual selection.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <button onclick="newBooking()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all flex items-center justify-center space-x-2 slide-up" style="animation-delay: 0.3s;">
+        <i data-lucide="train" class="w-5 h-5"></i>
+        <span>Book Another Journey</span>
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white/50 backdrop-blur-sm border-t border-slate-200 mt-16">
+    <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+      <div class="text-center text-sm text-slate-600">
+        <p>© 2025 RailAI - AI-Powered Train Reservation System</p>
+        <p class="mt-1 text-xs text-slate-500">
+          Zero Manual Selection • Maximum Comfort • Powered by Gemini LLM
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // State Management
+    let appState = {
+      currentView: 'home',
+      trains: [],
+      selectedTrain: null,
+      searchParams: {
+        from: 'Chennai',
+        to: '',
+        date: new Date().toISOString().split('T')[0],
+        passengers: 1
+      },
+      preferences: {
+        passengers: 1,
+        seatType: 'window',
+        groupBooking: false,
+        classType: '2AC',
+        legroom: false,
+        avoidRestroom: true
+      },
+      recommendations: [],
+      selectedRecommendation: null,
+      selectedCoach: 'A',
+      paymentMethod: 'upi'
+    };
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      lucide.createIcons();
+      loadTrains();
+      setupEventListeners();
+      document.getElementById('searchDate').value = appState.searchParams.date;
+    });
+
+    // Setup Event Listeners
+    function setupEventListeners() {
+      document.getElementById('prefPassengers').addEventListener('change', updatePreferences);
+      document.getElementById('prefSeatType').addEventListener('change', updatePreferences);
+      document.getElementById('prefClassType').addEventListener('change', updatePreferences);
+      document.getElementById('prefBookingType').addEventListener('change', updatePreferences);
+      document.getElementById('prefLegroom').addEventListener('change', updatePreferences);
+      document.getElementById('prefAvoidRestroom').addEventListener('change', updatePreferences);
+      
+      // Payment method listeners
+      document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+          appState.paymentMethod = this.value;
+          updatePaymentForm();
+        });
+      });
+
+      // Card number formatting
+      document.getElementById('cardNumber').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\s/g, '');
+        let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+        e.target.value = formattedValue;
+      });
+
+      // Expiry formatting
+      document.getElementById('cardExpiry').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+          value = value.slice(0, 2) + '/' + value.slice(2, 4);
+        }
+        e.target.value = value;
+      });
+    }
+
+    // Update Payment Form
+    function updatePaymentForm() {
+      document.getElementById('upiForm').classList.add('hidden');
+      document.getElementById('cardForm').classList.add('hidden');
+      document.getElementById('netbankingForm').classList.add('hidden');
+      document.getElementById('walletForm').classList.add('hidden');
+
+      switch(appState.paymentMethod) {
+        case 'upi':
+          document.getElementById('upiForm').classList.remove('hidden');
+          break;
+        case 'card':
+          document.getElementById('cardForm').classList.remove('hidden');
+          break;
+        case 'netbanking':
+          document.getElementById('netbankingForm').classList.remove('hidden');
+          break;
+        case 'wallet':
+          document.getElementById('walletForm').classList.remove('hidden');
+          break;
+      }
+    }
+
+    // Load Trains from API
+    function loadTrains() {
+      fetch('http://127.0.0.1:8000/train_static_list')
+        .then(response => response.json())
+        .then(data => {
+          appState.trains = data.map(train => ({
+            ...train,
+            seats: generateSeats(train.id, 80)
+          }));
+          document.getElementById('trainCount').textContent = `${appState.trains.length} trains available`;
+          renderPopularTrains();
+        })
+        .catch(error => {
+          console.error('Error loading trains:', error);
+          document.getElementById('trainCount').textContent = 'Error loading trains';
+        });
+    }
+
+    // Generate Seats
+    function generateSeats(trainId, totalSeats) {
+      const seats = [];
+      const coaches = ['A', 'B', 'C', 'D'];
+      const seatsPerCoach = Math.ceil(totalSeats / coaches.length);
+      
+      coaches.forEach(coach => {
+        for (let i = 1; i <= seatsPerCoach; i++) {
+          const seatNumber = `${coach}${i}`;
+          const row = Math.ceil(i / 4);
+          const position = i % 4 === 1 || i % 4 === 0 ? 'window' : 'aisle';
+          const isOccupied = Math.random() < 0.35;
+          
+          seats.push({
+            id: `${trainId}-${seatNumber}`,
+            number: seatNumber,
+            coach: coach,
+            row: row,
+            position: position,
+            isOccupied: isOccupied,
+            comfortScore: Math.floor(Math.random() * 20) + 80,
+            nearRestroom: row % 8 === 0,
+            extraLegroom: row % 5 === 1
+          });
+        }
+      });
+      
+      return seats;
+    }
+
+    // Render Popular Trains
+    function renderPopularTrains() {
+      const container = document.getElementById('popularTrains');
+      container.innerHTML = appState.trains.slice(0, 3).map(train => createTrainCard(train)).join('');
+      lucide.createIcons();
+    }
+
+    // Create Train Card HTML
+    function createTrainCard(train) {
+      const minPrice = Math.min(...train.classes.map(c => c.price));
+      return `
+        <div class="bg-white rounded-xl shadow-lg border border-slate-200 p-6 hover:shadow-xl transition-all cursor-pointer group"
+             onclick="selectTrainFromHome('${train.id}')">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <h4 class="font-bold text-lg text-slate-800 group-hover:text-blue-600 transition-colors">
+                ${train.name}
+              </h4>
+              <p class="text-sm text-slate-500">#${train.number}</p>
+            </div>
+            <div class="flex items-center space-x-1 bg-green-100 text-green-700 px-2 py-1 rounded-full text-sm">
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+              <span class="font-semibold">${train.rating}</span>
+            </div>
+          </div>
+
+          <div class="space-y-3 mb-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm text-slate-500">From</p>
+                <p class="font-semibold text-slate-800">${train.from}</p>
+              </div>
+              <i data-lucide="arrow-right" class="w-5 h-5 text-slate-400"></i>
+              <div>
+                <p class="text-sm text-slate-500">To</p>
+                <p class="font-semibold text-slate-800">${train.to}</p>
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-4 text-sm text-slate-600">
+              <div class="flex items-center space-x-1">
+                <i data-lucide="clock" class="w-4 h-4"></i>
+                <span>${train.duration}</span>
+              </div>
+              <div class="flex items-center space-x-1">
+                <span class="font-semibold">${train.departure}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-2 mb-4">
+            ${train.amenities.includes('wifi') ? '<i data-lucide="wifi" class="w-4 h-4 text-slate-400"></i>' : ''}
+            ${train.amenities.includes('food') ? '<i data-lucide="utensils" class="w-4 h-4 text-slate-400"></i>' : ''}
+            ${train.amenities.includes('charging') ? '<i data-lucide="battery-charging" class="w-4 h-4 text-slate-400"></i>' : ''}
+            ${train.amenities.includes('ac') ? '<i data-lucide="wind" class="w-4 h-4 text-slate-400"></i>' : ''}
+          </div>
+
+          <div class="flex items-center justify-between pt-4 border-t border-slate-200">
+            <div>
+              <p class="text-sm text-slate-500">Starting from</p>
+              <p class="text-xl font-bold text-blue-600">₹${minPrice}</p>
+            </div>
+            <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400 group-hover:text-blue-600 transition-colors"></i>
+          </div>
+        </div>
+      `;
+    }
+
+   
+    function searchTrains() {
+      const to = document.getElementById('searchTo').value;
+      if (!to) {
+        alert('Please select a destination');
+        return;
+      }
+
+      appState.searchParams = {
+        from: document.getElementById('searchFrom').value,
+        to: to,
+        date: document.getElementById('searchDate').value,
+        passengers: parseInt(document.getElementById('searchPassengers').value)
+      };
+
+      showView('results');
+      renderSearchResults();
+    }
+
+   
+    function renderSearchResults() {
+      const filtered = appState.trains.filter(t => t.to === appState.searchParams.to);
+      
+      document.getElementById('searchSummary').textContent = 
+        `${appState.searchParams.from} → ${appState.searchParams.to} • ${new Date(appState.searchParams.date).toLocaleDateString()}`;
+      
+      document.getElementById('resultsCount').textContent = `(${filtered.length})`;
+      
+      const container = document.getElementById('trainResults');
+      container.innerHTML = filtered.map(train => createTrainResultCard(train)).join('');
+      lucide.createIcons();
+    }
+
+    
+    function createTrainResultCard(train) {
+      return `
+        <div class="bg-white rounded-xl shadow-lg border border-slate-200 p-6 hover:shadow-xl transition-all fade-in">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center space-x-4">
+              <div class="bg-gradient-to-br from-blue-600 to-indigo-600 p-3 rounded-lg">
+                <i data-lucide="train" class="w-6 h-6 text-white"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-xl text-slate-800">${train.name}</h3>
+                <p class="text-sm text-slate-500">#${train.number} • ${train.type}</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 bg-green-100 text-green-700 px-3 py-1 rounded-full">
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+              <span class="font-semibold">${train.rating}</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="space-y-2">
+              <p class="text-sm text-slate-500">Departure</p>
+              <p class="text-2xl font-bold text-slate-800">${train.departure}</p>
+              <p class="text-sm text-slate-600">${train.from}</p>
+            </div>
+            <div class="flex flex-col items-center justify-center">
+              <i data-lucide="clock" class="w-5 h-5 text-slate-400 mb-1"></i>
+              <p class="text-sm font-semibold text-slate-600">${train.duration}</p>
+              <div class="w-full h-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full mt-2"></div>
+            </div>
+            <div class="space-y-2 text-right">
+              <p class="text-sm text-slate-500">Arrival</p>
+              <p class="text-2xl font-bold text-slate-800">${train.arrival}</p>
+              <p class="text-sm text-slate-600">${train.to}</p>
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-4 mb-6">
+            ${train.amenities.includes('wifi') ? '<div class="flex items-center space-x-1 text-sm text-slate-600"><i data-lucide="wifi" class="w-4 h-4"></i><span>WiFi</span></div>' : ''}
+            ${train.amenities.includes('food') ? '<div class="flex items-center space-x-1 text-sm text-slate-600"><i data-lucide="utensils" class="w-4 h-4"></i><span>Meals</span></div>' : ''}
+            ${train.amenities.includes('charging') ? '<div class="flex items-center space-x-1 text-sm text-slate-600"><i data-lucide="battery-charging" class="w-4 h-4"></i><span>Charging</span></div>' : ''}
+            ${train.amenities.includes('ac') ? '<div class="flex items-center space-x-1 text-sm text-slate-600"><i data-lucide="wind" class="w-4 h-4"></i><span>AC</span></div>' : ''}
+          </div>
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            ${train.classes.map(cls => `
+              <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                <p class="text-sm font-semibold text-slate-700 mb-1">${cls.type}</p>
+                <p class="text-2xl font-bold text-blue-600">₹${cls.price}</p>
+                <p class="text-xs text-slate-500 mt-1">${cls.available} seats available</p>
+              </div>
+            `).join('')}
+          </div>
+
+          <button onclick="selectTrain('${train.id}')" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all flex items-center justify-center space-x-2">
+            <i data-lucide="sparkles" class="w-5 h-5"></i>
+            <span>Book with AI</span>
+          </button>
+        </div>
+      `;
+    }
+
+
+    function selectTrainFromHome(trainId) {
+      const train = appState.trains.find(t => t.id === trainId);
+      if (train) {
+        appState.searchParams.to = train.to;
+        searchTrains();
+      }
+    }
+
+    
+    function selectTrain(trainId) {
+      appState.selectedTrain = appState.trains.find(t => t.id === trainId);
+      appState.preferences.passengers = appState.searchParams.passengers;
+      
+      showView('booking');
+      renderBookingView();
+      getAIRecommendations();
+    }
+
+    
+    function renderBookingView() {
+      const train = appState.selectedTrain;
+      
+     
+      document.getElementById('selectedTrainInfo').innerHTML = `
+        <div class="flex items-center space-x-4 mb-4">
+          <div class="bg-gradient-to-br from-blue-600 to-indigo-600 p-3 rounded-lg">
+            <i data-lucide="train" class="w-6 h-6 text-white"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-xl text-slate-800">${train.name}</h3>
+            <p class="text-sm text-slate-500">#${train.number}</p>
+          </div>
+        </div>
+      `;
+
+      
+      const classSelect = document.getElementById('prefClassType');
+      classSelect.innerHTML = train.classes.map(cls => 
+        `<option value="${cls.type}">${cls.type} - ₹${cls.price}</option>`
+      ).join('');
+
+     
+      document.getElementById('prefPassengers').value = appState.preferences.passengers;
+      
+      lucide.createIcons();
+    }
+
+  
+    function updatePreferences() {
+      appState.preferences = {
+        passengers: parseInt(document.getElementById('prefPassengers').value),
+        seatType: document.getElementById('prefSeatType').value,
+        groupBooking: document.getElementById('prefBookingType').value === 'group',
+        classType: document.getElementById('prefClassType').value,
+        legroom: document.getElementById('prefLegroom').checked,
+        avoidRestroom: document.getElementById('prefAvoidRestroom').checked
+      };
+      
+      getAIRecommendations();
+    }
+
+  
+    function getAIRecommendations() {
+      const recommendations = calculateRecommendations(appState.selectedTrain, appState.preferences);
+      appState.recommendations = recommendations;
+      
+      renderRecommendations();
+      renderSeatLayout();
+      
+      if (recommendations.length > 0) {
+        selectRecommendation(0);
+      }
+    }
+
+    
+    function calculateRecommendations(train, preferences) {
+      const availableSeats = train.seats.filter(s => !s.isOccupied);
+      
+      const scoreSeat = (seat, adjacentSeats = []) => {
+        let score = seat.comfortScore;
+        
+        if (preferences.seatType === 'window' && seat.position === 'window') score += 30;
+        if (preferences.seatType === 'aisle' && seat.position === 'aisle') score += 25;
+        if (preferences.legroom && seat.extraLegroom) score += 20;
+        if (preferences.avoidRestroom && seat.nearRestroom) score -= 15;
+        
+        if (preferences.groupBooking && adjacentSeats.length > 0) {
+          score += adjacentSeats.length * 15;
+        }
+        
+        return score;
+      };
+
+      if (preferences.groupBooking) {
+        const groupSeats = findGroupSeats(availableSeats, preferences.passengers);
+        return groupSeats.map(group => ({
+          seats: group,
+          score: group.reduce((sum, s) => sum + scoreSeat(s, group), 0) / group.length,
+          reasoning: generateReasoning(group, preferences)
+        })).sort((a, b) => b.score - a.score).slice(0, 3);
+      } else {
+        return availableSeats
+          .map(seat => ({
+            seats: [seat],
+            score: scoreSeat(seat),
+            reasoning: generateReasoning([seat], preferences)
+          }))
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 3);
+      }
+    }
+
+    // Find Group Seats
+    function findGroupSeats(seats, count) {
+      const groups = [];
+      const seatsByRow = {};
+      
+      seats.forEach(seat => {
+        const key = `${seat.coach}-${seat.row}`;
+        if (!seatsByRow[key]) seatsByRow[key] = [];
+        seatsByRow[key].push(seat);
+      });
+      
+      Object.values(seatsByRow).forEach(rowSeats => {
+        if (rowSeats.length >= count) {
+          for (let i = 0; i <= rowSeats.length - count; i++) {
+            groups.push(rowSeats.slice(i, i + count));
+          }
+        }
+      });
+      
+      if (groups.length < 3) {
+        const coaches = [...new Set(seats.map(s => s.coach))];
+        coaches.forEach(coach => {
+          const coachSeats = seats.filter(s => s.coach === coach);
+          for (let i = 0; i <= coachSeats.length - count; i++) {
+            groups.push(coachSeats.slice(i, i + count));
+          }
+        });
+      }
+      
+      return groups.slice(0, 10);
+    }
+
+    // Generate Reasoning
+    function generateReasoning(seats, preferences) {
+      const reasons = [];
+      const seat = seats[0];
+      
+      if (seats.length > 1) {
+        reasons.push(`${seats.length} adjacent seats in coach ${seat.coach}`);
+      }
+      if (seat.position === 'window' && preferences.seatType === 'window') {
+        reasons.push('Window seats with scenic views');
+      }
+      if (seat.extraLegroom) {
+        reasons.push('Extra legroom for comfort');
+      }
+      if (!seat.nearRestroom) {
+        reasons.push('Away from restrooms (quieter)');
+      }
+      if (seat.comfortScore > 90) {
+        reasons.push('High comfort rating');
+      }
+      
+      return reasons.join(' • ');
+    }
+
+    // Render Recommendations
+    function renderRecommendations() {
+      if (appState.recommendations.length === 0) return;
+      
+      const card = document.getElementById('recommendationsCard');
+      card.classList.remove('hidden');
+      
+      const container = document.getElementById('recommendationsList');
+      container.innerHTML = appState.recommendations.map((rec, idx) => `
+        <div onclick="selectRecommendation(${idx})" 
+             class="p-6 rounded-lg border-2 cursor-pointer transition-all ${
+               appState.selectedRecommendation === rec
+                 ? 'border-blue-600 bg-blue-50'
+                 : 'border-slate-200 hover:border-blue-300'
+             }">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex items-center space-x-3">
+              ${idx === 0 ? '<div class="bg-amber-100 text-amber-700 px-2 py-1 rounded text-xs font-semibold">BEST MATCH</div>' : ''}
+              <div class="flex items-center space-x-2">
+                <i data-lucide="armchair" class="w-5 h-5 text-slate-600"></i>
+                <span class="font-semibold text-slate-800">
+                  ${rec.seats.map(s => s.number).join(', ')}
+                </span>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <i data-lucide="star" class="w-5 h-5 text-amber-500 fill-current"></i>
+              <span class="font-bold text-slate-800">${rec.score.toFixed(1)}</span>
+            </div>
+          </div>
+
+          <p class="text-sm text-slate-600 mb-3">${rec.reasoning}</p>
+
+          <div class="flex items-center space-x-4 text-xs text-slate-500">
+            <span>Coach: ${rec.seats[0].coach}</span>
+            <span>•</span>
+            <span>Row: ${rec.seats[0].row}</span>
+            <span>•</span>
+            <span>Position: ${rec.seats[0].position}</span>
+          </div>
+
+          ${appState.selectedRecommendation === rec ? `
+            <div class="mt-4 flex items-center space-x-2 text-blue-600">
+              <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+              <span class="text-sm font-semibold">Selected</span>
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+      
+      lucide.createIcons();
+    }
+
+    // Select Recommendation
+    function selectRecommendation(index) {
+      appState.selectedRecommendation = appState.recommendations[index];
+      renderRecommendations();
+      renderSeatLayout();
+      showBookingSummary();
+    }
+
+    // Render Seat Layout
+    function renderSeatLayout() {
+      const card = document.getElementById('seatLayoutCard');
+      card.classList.remove('hidden');
+      
+      // Render coach buttons
+      const coaches = ['A', 'B', 'C', 'D'];
+      const coachButtons = document.getElementById('coachButtons');
+      coachButtons.innerHTML = coaches.map(coach => `
+        <button onclick="selectCoach('${coach}')" 
+                class="px-4 py-2 rounded-lg font-semibold transition-all ${
+                  appState.selectedCoach === coach
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }">
+          Coach ${coach}
+        </button>
+      `).join('');
+      
+      renderSeatGrid();
+    }
+
+    // Select Coach
+    function selectCoach(coach) {
+      appState.selectedCoach = coach;
+      renderSeatLayout();
+    }
+
+    // Render Seat Grid
+    function renderSeatGrid() {
+      const train = appState.selectedTrain;
+      const coachSeats = train.seats.filter(s => s.coach === appState.selectedCoach);
+      const rows = Math.max(...coachSeats.map(s => s.row));
+      
+      const recommendedSeats = appState.selectedRecommendation ? appState.selectedRecommendation.seats : [];
+      
+      let html = `
+        <div class="min-w-max">
+          <div class="text-center mb-4 pb-3 border-b-2 border-slate-300">
+            <div class="inline-flex items-center space-x-2 bg-slate-100 px-4 py-2 rounded-full">
+              <i data-lucide="arrow-right" class="w-4 h-4 text-slate-600 rotate-90"></i>
+              <span class="text-sm font-semibold text-slate-700">ENTRANCE</span>
+            </div>
+          </div>
+
+          <div class="flex items-center mb-2 text-xs font-semibold text-slate-500">
+            <div class="w-12 text-center">Row</div>
+            <div class="flex space-x-1">
+              <div class="w-12 text-center">Window</div>
+              <div class="w-12 text-center">Aisle</div>
+              <div class="w-16"></div>
+              <div class="w-12 text-center">Aisle</div>
+              <div class="w-12 text-center">Window</div>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+      `;
+
+      for (let row = 1; row <= rows; row++) {
+        html += `<div class="flex items-center space-x-1">`;
+        html += `<div class="w-12 text-center"><span class="text-xs font-semibold text-slate-600">${row}</span></div>`;
+        
+        for (let pos = 0; pos < 4; pos++) {
+          if (pos === 2) {
+            html += `<div class="w-16 flex items-center justify-center"><div class="h-px w-full bg-slate-200"></div></div>`;
+          }
+          
+          const seat = coachSeats.find(s => s.row === row && getSeatPosition(s) === pos);
+          html += renderSeatButton(seat, recommendedSeats);
+        }
+        
+        if (row % 5 === 0) {
+          html += `<div class="ml-4 text-xs text-slate-400">${row % 8 === 0 ? '🚻 Restroom' : ''}</div>`;
+        }
+        
+        html += `</div>`;
+      }
+
+      html += `
+          </div>
+
+          <div class="text-center mt-4 pt-3 border-t-2 border-slate-300">
+            <div class="inline-flex items-center space-x-2 bg-slate-100 px-4 py-2 rounded-full">
+              <span class="text-sm font-semibold text-slate-700">EXIT</span>
+              <i data-lucide="arrow-right" class="w-4 h-4 text-slate-600 rotate-90"></i>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('seatGrid').innerHTML = html;
+      lucide.createIcons();
+    }
+
+    // Get Seat Position
+    function getSeatPosition(seat) {
+      const seatNum = parseInt(seat.number.replace(/[A-Z]/g, ''));
+      const mod = seatNum % 4;
+      if (mod === 1) return 0;
+      if (mod === 2) return 1;
+      if (mod === 3) return 2;
+      if (mod === 0) return 3;
+      return 0;
+    }
+
+    // Render Seat Button
+    function renderSeatButton(seat, recommendedSeats) {
+      if (!seat) {
+        return '<div class="w-12 h-12"></div>';
+      }
+
+      const isRecommended = recommendedSeats.some(rs => rs.id === seat.id);
+      
+      let className = 'w-12 h-12 border-2 rounded-lg flex flex-col items-center justify-center transition-all ';
+      let textClass = 'text-xs font-semibold mt-1 ';
+      let icon = '';
+      
+      if (seat.isOccupied) {
+        className += 'bg-slate-200 border-slate-400 cursor-not-allowed';
+        textClass += 'text-slate-500';
+        icon = '<i data-lucide="x" class="w-3 h-3 text-slate-500"></i>';
+      } else if (isRecommended) {
+        className += 'bg-gradient-to-br from-amber-100 to-yellow-100 border-amber-500 cursor-pointer hover:border-amber-600 shadow-lg';
+        textClass += 'text-amber-700';
+        icon = '<i data-lucide="star" class="w-3 h-3 text-amber-600 fill-current"></i>';
+      } else if (seat.position === 'window') {
+        className += 'bg-green-50 border-green-500 cursor-pointer hover:bg-green-100';
+        textClass += 'text-slate-700';
+      } else {
+        className += 'bg-green-50 border-green-400 cursor-pointer hover:bg-green-100';
+        textClass += 'text-slate-700';
+      }
+
+      return `
+        <button class="${className}" title="${seat.number} - ${seat.position} - ${seat.isOccupied ? 'Occupied' : 'Available'}">
+          ${icon}
+          <span class="${textClass}">${seat.number.replace(/[A-Z]/g, '')}</span>
+        </button>
+      `;
+    }
+
+    // Show Booking Summary
+    function showBookingSummary() {
+      const summary = document.getElementById('bookingSummary');
+      summary.classList.remove('hidden');
+      
+      const seats = appState.selectedRecommendation.seats;
+      const price = appState.selectedTrain.classes.find(c => c.type === appState.preferences.classType).price;
+      const total = price * appState.preferences.passengers;
+      
+      document.getElementById('summarySeats').textContent = 
+        `${appState.preferences.passengers} ${appState.preferences.passengers === 1 ? 'Passenger' : 'Passengers'} • ${seats.map(s => s.number).join(', ')}`;
+      
+      document.getElementById('totalAmount').textContent = `₹${total}`;
+      
+      lucide.createIcons();
+    }
+
+    // Proceed to Payment
+    function proceedToPayment() {
+      showView('payment');
+      renderPaymentView();
+    }
+
+    // Render Payment View
+    function renderPaymentView() {
+      const train = appState.selectedTrain;
+      const price = train.classes.find(c => c.type === appState.preferences.classType).price;
+      const total = price * appState.preferences.passengers;
+      
+      // Order Summary
+      document.getElementById('paymentOrderSummary').innerHTML = `
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+          <div>
+            <p class="font-semibold text-slate-800">${train.name}</p>
+            <p class="text-sm text-slate-500">#${train.number}</p>
+          </div>
+          <p class="font-semibold text-slate-800">₹${price}</p>
+        </div>
+        <div class="flex items-center justify-between py-3 border-b border-slate-200">
+          <p class="text-sm text-slate-600">Passengers</p>
+          <p class="font-semibold text-slate-800">${appState.preferences.passengers}</p>
+        </div>
+        <div class="flex items-center justify-between py-3 border-b border-slate-200">
+          <p class="text-sm text-slate-600">Class</p>
+          <p class="font-semibold text-slate-800">${appState.preferences.classType}</p>
+        </div>
+        <div class="flex items-center justify-between py-3 border-b border-slate-200">
+          <p class="text-sm text-slate-600">Seats</p>
+          <p class="font-semibold text-slate-800">${appState.selectedRecommendation.seats.map(s => s.number).join(', ')}</p>
+        </div>
+        <div class="flex items-center justify-between pt-3">
+          <p class="font-bold text-lg text-slate-800">Total Amount</p>
+          <p class="font-bold text-2xl text-blue-600">₹${total}</p>
+        </div>
+      `;
+      
+      document.getElementById('payAmount').textContent = `₹${total}`;
+      
+      lucide.createIcons();
+    }
+
+    // Process Payment
+    function processPayment() {
+      // Validate payment details
+      let isValid = false;
+      
+      switch(appState.paymentMethod) {
+        case 'upi':
+          const upiId = document.getElementById('upiId').value;
+          if (upiId && upiId.includes('@')) {
+            isValid = true;
+          } else {
+            alert('Please enter a valid UPI ID');
+            return;
+          }
+          break;
+        case 'card':
+          const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+          const cardExpiry = document.getElementById('cardExpiry').value;
+          const cardCvv = document.getElementById('cardCvv').value;
+          const cardName = document.getElementById('cardName').value;
+          
+          if (cardNumber.length === 16 && cardExpiry.length === 5 && cardCvv.length === 3 && cardName) {
+            isValid = true;
+          } else {
+            alert('Please fill all card details correctly');
+            return;
+          }
+          break;
+        case 'netbanking':
+          const bank = document.getElementById('bankSelect').value;
+          if (bank) {
+            isValid = true;
+          } else {
+            alert('Please select a bank');
+            return;
+          }
+          break;
+        case 'wallet':
+          const wallet = document.getElementById('walletSelect').value;
+          if (wallet) {
+            isValid = true;
+          } else {
+            alert('Please select a wallet');
+            return;
+          }
+          break;
+      }
+      
+      if (isValid) {
+        // Show processing view
+        showView('processing');
+        
+        // Simulate payment processing
+        setTimeout(() => {
+          showView('confirmation');
+          renderConfirmation();
+        }, 3000);
+      }
+    }
+
+    // Render Confirmation
+    function renderConfirmation() {
+      const train = appState.selectedTrain;
+      const rec = appState.selectedRecommendation;
+      const price = train.classes.find(c => c.type === appState.preferences.classType).price;
+      const total = price * appState.preferences.passengers;
+      const pnr = Math.floor(1000000000 + Math.random() * 9000000000);
+      const transactionId = 'TXN' + Math.floor(100000000 + Math.random() * 900000000);
+
+      document.getElementById('confirmationDetails').innerHTML = `
+        <h3 class="font-bold text-xl text-slate-800 mb-4">Booking Details</h3>
+
+        <div class="grid grid-cols-2 gap-4 pb-4 border-b border-slate-200">
+          <div>
+            <p class="text-sm text-slate-500">Train</p>
+            <p class="font-semibold text-slate-800">${train.name}</p>
+            <p class="text-sm text-slate-500">#${train.number}</p>
+          </div>
+          <div class="text-right">
+            <p class="text-sm text-slate-500">PNR Number</p>
+            <p class="font-bold text-lg text-blue-600">${pnr}</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 pb-4 border-b border-slate-200">
+          <div>
+            <p class="text-sm text-slate-500">From</p>
+            <p class="font-semibold text-slate-800">${train.from}</p>
+            <p class="text-sm text-slate-600">${train.departure}</p>
+          </div>
+          <div class="text-right">
+            <p class="text-sm text-slate-500">To</p>
+            <p class="font-semibold text-slate-800">${train.to}</p>
+            <p class="text-sm text-slate-600">${train.arrival}</p>
+          </div>
+        </div>
+
+        <div class="pb-4 border-b border-slate-200">
+          <p class="text-sm text-slate-500 mb-2">Seat Details</p>
+          <div class="flex items-center space-x-2">
+            <div class="bg-blue-100 text-blue-700 px-3 py-2 rounded-lg font-semibold">
+              ${rec.seats.map(s => s.number).join(', ')}
+            </div>
+            <span class="text-sm text-slate-600">
+              Coach ${rec.seats[0].coach} • ${appState.preferences.classType}
+            </span>
+          </div>
+        </div>
+
+        <div class="pb-4 border-b border-slate-200">
+          <p class="text-sm text-slate-500 mb-2">Payment Details</p>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-slate-600">Transaction ID</p>
+              <p class="font-semibold text-slate-800">${transactionId}</p>
+            </div>
+            <div class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
+              PAID
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-4">
+          <div>
+            <p class="text-sm text-slate-500">Passengers</p>
+            <p class="font-semibold text-slate-800">${appState.preferences.passengers}</p>
+          </div>
+          <div class="text-right">
+            <p class="text-sm text-slate-500">Total Paid</p>
+            <p class="text-2xl font-bold text-green-600">₹${total}</p>
+          </div>
+        </div>
+      `;
+
+      lucide.createIcons();
+    }
+
+  
+    function newBooking() {
+      appState.selectedTrain = null;
+      appState.selectedRecommendation = null;
+      appState.recommendations = [];
+      document.getElementById('searchTo').value = '';
+      
+  
+      document.getElementById('upiId').value = '';
+      document.getElementById('cardNumber').value = '';
+      document.getElementById('cardExpiry').value = '';
+      document.getElementById('cardCvv').value = '';
+      document.getElementById('cardName').value = '';
+      document.getElementById('bankSelect').value = '';
+      document.getElementById('walletSelect').value = '';
+      
+      showView('home');
+    }
+
+    
+    function showView(view) {
+      const views = ['homeView', 'resultsView', 'bookingView', 'paymentView', 'processingView', 'confirmationView'];
+      views.forEach(v => {
+        document.getElementById(v).classList.add('hidden');
+      });
+      document.getElementById(view + 'View').classList.remove('hidden');
+      appState.currentView = view;
+      
+      
+      if (view !== 'booking') {
+        document.getElementById('recommendationsCard').classList.add('hidden');
+        document.getElementById('seatLayoutCard').classList.add('hidden');
+        document.getElementById('bookingSummary').classList.add('hidden');
+      }
+      
+    
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>
