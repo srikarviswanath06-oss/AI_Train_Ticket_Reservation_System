@@ -1,0 +1,19 @@
+{
+  "name": "ai-train-booking",
+  "version": "1.0.0",
+  "description": "AI-assisted train ticket booking demo (Node.js/Express rewrite of the original Django project)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "dependencies": {
+    "@google/genai": "^1.31.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0"
+  }
+}
